@@ -47,6 +47,9 @@ List<CalcTO>lista;
     TableColumn<CalcTO, String>result;
     @FXML
     TableColumn<CalcTO,Void> opcionesx;
+    @Autowired
+    private CalcRepoSql calcRepoSql;
+
     @FXML
     private  void initialize(){
         listar();
@@ -94,7 +97,8 @@ List<CalcTO>lista;
             to.setOperator(operador.charAt(0));
             to.setResultado(String.valueOf(resultado));
             if(indexID!=-1){
-                serviceI.update(to,indexID);
+                calcRepoSql.actualizarEntidad(to, indexID);
+                //serviceI.update(to,indexID);
             }else{
                 calcRepoSQl.guardarEntidad(to);
                // serviceI.save(to);
@@ -119,10 +123,13 @@ List<CalcTO>lista;
         oper.setCellValueFactory(new PropertyValueFactory<>("operador"));
         oper.setCellFactory(ComboBoxTableCell.<CalcTO,Character>forTableColumn('+','-','/','*'));
 
-        num2x.setCellValueFactory(new PropertyValueFactory<CalcTO,String>("num2"));
-        num2x.setCellFactory(TextFieldTableCell.<CalcTO>forTableColumn());
+        result.setCellValueFactory(new PropertyValueFactory<CalcTO,String>("result"));
+        result.setCellFactory(TextFieldTableCell.<CalcTO>forTableColumn());
         addActionButtonsToTable();
+
         //datos= FXCollections.observableArrayList(lista);
+
+
         datos= FXCollections.observableArrayList(calcRepoSQl.listarEntidad());
         tableView.setItems(datos);
     }
@@ -136,7 +143,7 @@ List<CalcTO>lista;
                 editButton.getStyleClass().setAll("btn", "btn-success");
                 editButton.setOnAction(event -> {
                     CalcTO cal = getTableView().getItems().get(getIndex());
-                    editOperCalc(cal, getIndex());
+                    editOperCalc(cal, cal.getId());
                 });
                 deleteButton.getStyleClass().setAll("btn", "btn-danger");
                 deleteButton.setOnAction(event -> {
